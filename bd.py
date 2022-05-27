@@ -32,6 +32,7 @@ from_lang = 'auto'
 to_lang = 'zh'
 if re.search(r"[\u4e00-\u9fa5]+", query):
     to_lang = "en"
+
 salt = random.randint(32768, 65536)
 sign = make_md5(appid + query + str(salt) + appkey)
 payload = {
@@ -49,6 +50,15 @@ r = requests.post(url, params=payload, headers=headers)
 result = r.json()
 
 items = []
-add_item(items, result["trans_result"][0]["dst"],
-         result["trans_result"][0]["src"])
+if "error_msg" in result:
+    error_msg = result["error_msg"]
+    add_item(items, error_msg, error_msg)
+else:
+    dst = result["trans_result"][0]["dst"]
+    src = result["trans_result"][0]["src"]
+    if to_lang == "en":
+        add_item(items, dst.lower(), src)
+    else:
+        add_item(items, dst, src)
+
 print(json.dumps({'items': items}))
