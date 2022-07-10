@@ -1,0 +1,1 @@
+tell application id "com.runningwithcrayons.Alfred" to search "bd {popclip text}"
